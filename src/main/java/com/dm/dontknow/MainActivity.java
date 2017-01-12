@@ -1,10 +1,15 @@
 package com.dm.dontknow;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.view.View;
 
 import com.dm.dontknow.ui.BaseActivity;
+import com.dm.dontknow.ui.fragment.CameraFragment;
+import com.dm.dontknow.ui.fragment.HelpFragment;
+import com.dm.dontknow.ui.fragment.PositionFragment;
+import com.dm.dontknow.ui.fragment.SearchFragment;
 
 import me.majiajie.pagerbottomtabstrip.Controller;
 import me.majiajie.pagerbottomtabstrip.PagerBottomTabLayout;
@@ -17,17 +22,23 @@ public class MainActivity extends BaseActivity {
 
     private PagerBottomTabLayout tabLayout;
     private Controller controller;
-    private FrameLayout mainContainer;
+
+    private FragmentManager supportFragmentManager;
 
     @Override
     public void initView() {
         tabLayout = (PagerBottomTabLayout) findViewById(R.id.main_tab);
-        mainContainer = (FrameLayout) findViewById(R.id.main_container);
-        TextView tv1 = new TextView(context);
-        tv1.setText("首页");
-        mainContainer.removeAllViews();
-        mainContainer.addView(tv1);
+        //获取管理器
+        supportFragmentManager = getSupportFragmentManager();
+        FragmentTransaction transaction = supportFragmentManager.beginTransaction();
+
+        //初次进入显示相机
+        transaction.replace(R.id.main_container,new CameraFragment());
+        transaction.commit();
+
     }
+
+
 
     @Override
     public void initData(Bundle savedInstanceState) {
@@ -38,24 +49,6 @@ public class MainActivity extends BaseActivity {
                 .setSelectedColor(tabColors[0])
                 .setTag("A")
                 .build();
-        /*TabItemBuilder tabItemBuilder2 = new TabItemBuilder(context).create()
-                .setText("位置")
-                .setDefaultIcon(R.mipmap.ic_launcher)
-                .setSelectedColor(tabColors[1])
-                .setTag("B")
-                .build();
-        TabItemBuilder tabItemBuilder3 = new TabItemBuilder(context).create()
-                .setText("搜索")
-                .setDefaultIcon(R.mipmap.ic_launcher)
-                .setSelectedColor(tabColors[2])
-                .setTag("C")
-                .build();
-        TabItemBuilder tabItemBuilder4 = new TabItemBuilder(context).create()
-                .setText("帮助")
-                .setDefaultIcon(R.mipmap.ic_launcher)
-                .setSelectedColor(tabColors[3])
-                .setTag("D")
-                .build();*/
         controller = tabLayout.builder()
                 .addTabItem(tabItemBuilder1)
                 .addTabItem(R.mipmap.ic_launcher, "位置", tabColors[1])
@@ -70,32 +63,22 @@ public class MainActivity extends BaseActivity {
         OnTabItemSelectListener listener = new OnTabItemSelectListener() {
             @Override
             public void onSelected(int index, Object tag) {
+                FragmentTransaction transaction = supportFragmentManager.beginTransaction();
                 switch (index) {
                     case 0:
-                        TextView tv1 = new TextView(context);
-                        tv1.setText("首页");
-                        mainContainer.removeAllViews();
-                        mainContainer.addView(tv1);
+                        transaction.replace(R.id.main_container,new CameraFragment());
                         break;
                     case 1:
-                        TextView tv2 = new TextView(context);
-                        tv2.setText("位置");
-                        mainContainer.removeAllViews();
-                        mainContainer.addView(tv2);
+                        transaction.replace(R.id.main_container,new PositionFragment());
                         break;
                     case 2:
-                        TextView tv3 = new TextView(context);
-                        tv3.setText("搜索");
-                        mainContainer.removeAllViews();
-                        mainContainer.addView(tv3);
+                        transaction.replace(R.id.main_container,new SearchFragment());
                         break;
                     case 3:
-                        TextView tv4 = new TextView(context);
-                        tv4.setText("帮助");
-                        mainContainer.removeAllViews();
-                        mainContainer.addView(tv4);
+                        transaction.replace(R.id.main_container,new HelpFragment());
                         break;
                 }
+                transaction.commit();
             }
 
             @Override
@@ -108,4 +91,6 @@ public class MainActivity extends BaseActivity {
     public int getLayoutId() {
         return R.layout.activity_main;
     }
+    @Override
+    public void initView(View rootView) {}
 }
